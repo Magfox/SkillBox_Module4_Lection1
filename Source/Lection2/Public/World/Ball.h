@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Ball.generated.h"
+// Объявляем делегат ивента
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeadEvent); 
+
 
 class UArrowComponent;
 
@@ -34,7 +37,7 @@ struct FInitParameters
 	// Конструктор структуры по умолчанию
 	FInitParameters()
 	{
-		Scale = 1.0f;
+		Scale = 0.50f;
 		Power = 1;
 		Speed = 500.0f;
 		MaxSpeed = 2500.0f;
@@ -58,13 +61,19 @@ private:
 	
 public:	
 	ABall();
-
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnDeadEvent OnDeadEvent;
+	// Материал который будет зависеть от силы шара и задаем его в БП
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+	UMaterialInterface* PowerMaterial = nullptr;
 	
 	
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+	virtual void Destroyed() override;
 	
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
@@ -73,6 +82,26 @@ protected:
 	// Функция движения мяча
 	UFUNCTION(BlueprintCallable, Category = Ball)
 	void Move(const float DeltaTime);
+public:
+	FORCEINLINE int32 GetPower() const { return Power; } // Получение силы мяча
 	// Функция установки направления движения мяча
 	void SetBallState(const EState NewState);
+
+	
+// Бонусная секция
+	FTimerHandle TimerBallPower;
+	UPROPERTY()
+	UMaterialInterface* DefaultMaterial = nullptr;
+	// Установка дефолтного материала
+	void UpdateBallMaterial();
+	// Возвращаем базовую скорость шара
+	void ResetBallPower();
+
+	
+public:
+	// Функция изменения скорости шара
+	void ChangeSpeed(const float Amount);
+	// Функция изменения силы шара
+	void ChangeBallPower(const int32 Amount, const float BonusTime);
+	
 };

@@ -40,6 +40,12 @@ void ABall::BeginPlay()
 	Super::BeginPlay();
 	
 	Direction = GetActorForwardVector().GetSafeNormal(); // Инициализация направления мяча
+	// Базовй материал
+	if (StaticMesh)
+	{
+		DefaultMaterial = StaticMesh->GetMaterial(0);
+	}
+	UpdateBallMaterial();
 	SetBallState(EState::moving); // Установка состояния мяча в движение
 	
 }
@@ -61,6 +67,13 @@ void ABall::Tick(float DeltaTime)
 		break;
 	}
 	
+	
+}
+
+void ABall::Destroyed()
+{
+	OnDeadEvent.Broadcast();
+	Super::Destroyed();
 	
 }
 
@@ -89,5 +102,60 @@ void ABall::Move(const float DeltaTime)
 void ABall::SetBallState(const EState NewState)
 {
 	State = NewState; // Установка нового состояния мяча
+}
+
+void ABall::UpdateBallMaterial()
+{
+	if (!StaticMesh)
+	{
+		return;
+	}
+	if (Power > 1)
+	{
+		if (PowerMaterial) // Установлен ли материал в БП 
+		{
+			StaticMesh->SetMaterial(0, PowerMaterial);
+		}
+	}
+	else
+	{
+		StaticMesh->SetMaterial(0, DefaultMaterial);
+	}
+}
+
+void ABall::ResetBallPower()
+{
+	Power = InitParameters.Power; //Возвращаем базовое значения из конструктора
+	UpdateBallMaterial();
+}
+
+void ABall::ChangeSpeed(const float Amount)
+{
+	if (Amount < 0)
+	{
+		Speed = FMath::Min(Speed - Speed * Amount, InitParameters.Speed);// Чтобы скорость не стала ниже минимума
+	}
+	else if (Amount > 0)
+	{
+		Speed = FMath::Max(Speed + Speed * Amount, InitParameters.MaxSpeed);// Чтобы скорость не стала больше максимума
+	}
+}
+
+void ABall::ChangeBallPower(const int32 Amount, const float BonusTime)
+{
+	if (Amount != 0 && BonusTime > 0)
+	{
+		if (!GetWorld()->GetTimerManager().IsTimerActive(TimerBallPower))// Проверяем активен ли таймер
+		{
+			Power = FMath::Max(Power + Amount, 1); // Сила не может быть меньше 1
+			UpdateBallMaterial();
+		}
+		GetWorld()->GetTimerManager().SetTimer( // Запускаем таймер
+			TimerBallPower,
+			this,
+			&ABall::ResetBallPower,
+			BonusTime,
+			true);
+	}
 }
 
