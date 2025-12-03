@@ -212,6 +212,7 @@ void APaddle::SetDefaultSize()
 	SetActorScale3D(DefaultScale);// Ставим дефолт размер каретки
 	BoxCollider->SetBoxExtent(FVector(25.0f, 50.0f + 20.0f / DefaultScale.Y, 25.0f));
 }
+
 // Бонус изменения размера каретки
 void APaddle::BonusChangeSize(const float AdditionalSize, const float BonusTime)
 {
@@ -252,6 +253,22 @@ void APaddle::BonusChangeBallPower(const int32 Amount, const float BonusTime)
 	if (IsValid(CurrentBall))
 	{
 		CurrentBall->ChangeBallPower(Amount, BonusTime);
+	}
+}
+
+void APaddle::SetDefaultPositionBall()
+{
+	GEngine->AddOnScreenDebugMessage(
+			-1,// ключ сообщения (-1 = всегда новое сообщение)
+			5.0f,          // сколько секунд показывать
+			FColor::Green, // цвет текста
+			TEXT("BonusChangeSpawnBall called!"));
+
+	if (IsValid(CurrentBall))
+	{
+		CurrentBall->SetBallState(EState::idle); // Останавливаем мяч
+		
+		
 	}
 }
 

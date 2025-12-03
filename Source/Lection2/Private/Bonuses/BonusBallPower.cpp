@@ -15,6 +15,7 @@ ABonusBallPower::ABonusBallPower()
 void ABonusBallPower::BonusAction(APaddle* Paddle)
 {
 	Paddle->BonusChangeBallPower(Value, Duration);
+	
 	Super::BonusAction(Paddle);
 }
 
