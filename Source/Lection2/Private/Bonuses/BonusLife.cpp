@@ -15,7 +15,6 @@ ABonusLife::ABonusLife()
 void ABonusLife::BonusAction(APaddle* Paddle)
 {
 	Paddle->BonusChangeLife(Value);// Добавляем жизни
-	Paddle->BonusChangeSpawnBall();
 	Super::BonusAction(Paddle);
 }
 

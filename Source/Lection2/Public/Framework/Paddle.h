@@ -101,5 +101,5 @@ public:
 	void BonusChangeLife(const int32 Amount);// Функция изменения жизней
 	void BonusChangeBallSpeed(const float Amount);// Функция изменения скорости шаров
 	void BonusChangeBallPower(const int32 Amount, const float BonusTime);// Функция изменения мощности шаров
-	void SetDefaultPositionBall(); // Функция спавна доп шара
+	void BonusSetDefaultPositionBallArrow(); // Функция Возвращения мяча к каретке
 };

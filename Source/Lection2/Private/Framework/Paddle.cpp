@@ -256,7 +256,7 @@ void APaddle::BonusChangeBallPower(const int32 Amount, const float BonusTime)
 	}
 }
 
-void APaddle::SetDefaultPositionBall()
+void APaddle::BonusSetDefaultPositionBallArrow()
 {
 	GEngine->AddOnScreenDebugMessage(
 			-1,// ключ сообщения (-1 = всегда новое сообщение)
@@ -267,8 +267,7 @@ void APaddle::SetDefaultPositionBall()
 	if (IsValid(CurrentBall))
 	{
 		CurrentBall->SetBallState(EState::idle); // Останавливаем мяч
-		
-		
+		CurrentBall->AttachToComponent(Arrow, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
 }
 
