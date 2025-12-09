@@ -22,7 +22,8 @@ private:
 	ULifeComponent* LifeComponent = nullptr;
 
 	TSubclassOf<ABonusParent> BonusClass = nullptr; // Класс бонуса, который может спавниться из блока
-	
+	// Максимальное количество жизней блока
+	int32 MaxLife = 1;
 public:	
 	// Sets default values for this actor's properties
 	ABlock();
@@ -40,6 +41,10 @@ public:
 	// Функция инициализации блока
 	void Init(const FVector NewScale, const int32 LifeAmount,
 		const TSubclassOf<ABonusParent> NewBonusClass = nullptr);
+	// начисление очков игроку при разрушении блока
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
+	int32 ScoreByLife = 25; // Очки за каждую жизнь блока
+	
 	// Материалы блока в зависимости от количества жизней
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
 	TArray<UMaterialInterface*> LifeMaterials; 

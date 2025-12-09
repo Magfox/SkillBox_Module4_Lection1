@@ -6,6 +6,7 @@
 #include "MovieSceneTracksComponentTypes.h"
 #include "Bonuses/BonusParent.h"
 #include "DSP/MidiNoteQuantizer.h"
+#include "Framework/ArkanoidGameMode.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "World/Block.h"
 
@@ -126,6 +127,14 @@ void APlayingBoard::SpawnBlockActors()
 void APlayingBoard::OnBlockDestroyed(AActor* DestroyedBlock)
 {
 	BlockActors.Remove(Cast<ABlock>(DestroyedBlock));// Удаление уничтоженного блока из массива блоков доски
+
+	if (!BlockActors.Num()) // Если количество блоков равно 0
+	{
+		if (auto GM = Cast<AArkanoidGameMode>(GetWorld()->GetAuthGameMode()))
+		{
+			GM->GameEnded(); // вызываем конец игры
+		}
+	}
 }
 
 APlayingBoard::APlayingBoard()
