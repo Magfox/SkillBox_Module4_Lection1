@@ -45,8 +45,10 @@ void ABlock::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class U
 			{
 				if (BonusClass && GetWorld()) // Если класс бонуса установлен и мир валиден
 				{
-					auto CurrentBonus = GetWorld()->SpawnActor<ABonusParent>(
-						BonusClass, GetActorLocation(), GetActorRotation()); // Спавн бонуса в позиции и ротации блока
+					const auto CurrentBonus = GetWorld()->SpawnActor<ABonusParent>
+					(BonusClass, GetActorLocation(), GetActorRotation()); // Спавн бонуса в позиции и ротации блока
+					//auto CurrentBonus = GetWorld()->SpawnActor<ABonusParent>(
+					//	BonusClass, GetActorLocation(), GetActorRotation()); // Спавн бонуса в позиции и ротации блока
 				}
 
 				if (const auto Pawn = Cast<APawn>(Other->GetOwner())) // Получение владельца мяча и проверка, что это Pawn

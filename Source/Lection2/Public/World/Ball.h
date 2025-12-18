@@ -53,6 +53,9 @@ private:
 	UStaticMeshComponent* StaticMesh = nullptr; // Статик меш для мяча
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	UArrowComponent* ForwardArrow = nullptr; // Стрелка направления вперёд
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	UAudioComponent* AudioComponent = nullptr; // Аудио компонент для звуков мяча
+	
 	// Инициализационные параметры мяча
 	int32 Power = 1;
 	float Speed = 500.0f;

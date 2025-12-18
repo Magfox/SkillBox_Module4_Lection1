@@ -4,6 +4,7 @@
 #include "World/Ball.h"
 
 #include "Components/ArrowComponent.h"
+#include "Components/AudioComponent.h"
 
 // Sets default values
 ABall::ABall()
@@ -15,9 +16,14 @@ ABall::ABall()
 	SetRootComponent(StaticMesh);
 
 	ForwardArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Forward Arrow")); // Создание компонента стрелки
-	ForwardArrow->SetupAttachment(StaticMesh); 
+	ForwardArrow->SetupAttachment(StaticMesh);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Engine/BasicShapes/Sphere.Sphere")); // Загрузка меша сферы из движка
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component")); // Создание аудио компонента
+	AudioComponent->SetupAttachment(StaticMesh);
+	AudioComponent->SetAutoActivate(false); // Отключение автоматического воспроизведения звука
+	
+	// Загрузка меша сферы из движка 
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMeshAsset(TEXT("/Engine/BasicShapes/Sphere.Sphere")); 
 	if (SphereMeshAsset.Succeeded()) // Если меш успешно загружен
 	{
 		StaticMesh->SetStaticMesh(SphereMeshAsset.Object); // Установка меша для статик меша
@@ -85,6 +91,16 @@ void ABall::Move(const float DeltaTime)
 
 	if (HitResult.bBlockingHit)
 	{
+		AudioComponent->Play();// Воспроизведение звука столкновения мяча
+	
+
+
+		
+		/*
+		 Формула для вычесления отраженного вектора выглядит так
+		 ReflectedDirection = Direction - 2 * (Direction · Normal) * Normal
+		 (В выражении (Direction * normal) используется скалярное произведение!)
+		 */
 		Direction = Direction - 2 * (FVector::DotProduct(Direction,
 			HitResult.Normal)) * HitResult.Normal; // Вычисление нового направления мяча после столкновения
 		Direction.Z = 0; // Обнуление вертикальной составляющей направления

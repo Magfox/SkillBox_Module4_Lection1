@@ -22,5 +22,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ArkanoidGameMode")
 	void GameStarted(); 
 	UFUNCTION(BlueprintCallable, Category = "ArkanoidGameMode")
-	void GameEnded();
+	void GameEnded(const bool bIsWinner);
 };

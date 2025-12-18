@@ -130,9 +130,9 @@ void APlayingBoard::OnBlockDestroyed(AActor* DestroyedBlock)
 
 	if (!BlockActors.Num()) // Если количество блоков равно 0
 	{
-		if (auto GM = Cast<AArkanoidGameMode>(GetWorld()->GetAuthGameMode()))
+		if (const auto GM = Cast<AArkanoidGameMode>(GetWorld()->GetAuthGameMode()))
 		{
-			GM->GameEnded(); // вызываем конец игры
+			GM->GameEnded(true); // вызываем конец игры
 		}
 	}
 }
@@ -140,7 +140,7 @@ void APlayingBoard::OnBlockDestroyed(AActor* DestroyedBlock)
 APlayingBoard::APlayingBoard()
 {
  	
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = false; 
 
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));// Создание корневого компонента сцены
 	SetRootComponent(SceneRoot); // Установка корневого компонента сцены

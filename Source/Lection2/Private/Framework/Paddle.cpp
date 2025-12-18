@@ -7,6 +7,8 @@
 #include "MovieSceneTracksComponentTypes.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Framework/ArkanoidGameMode.h"
+#include "Framework/ArkanoidPC.h"
 #include "Kismet/GameplayStatics.h"
 #include "World/Ball.h"
 
@@ -149,8 +151,15 @@ void APaddle::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void APaddle::ExitGame()
 {
-	UGameplayStatics::OpenLevel(GetWorld(),"Menu", true);
+	//UGameplayStatics::OpenLevel(GetWorld(),"Menu", true);
+	if (const auto Pc = Cast<AArkanoidPC>(Controller))
+	{
+		Pc->ExitButtonPressed();
+	}
 }
+
+
+
 // Начало игры при нажатии кнопки
 void APaddle::StartGame()
 {
@@ -204,6 +213,11 @@ void APaddle::BallIsDead()
 		BallLives[Lives - 1]->DestroyComponent();// Уничтожаем 1 шарик показывающий сколько жизней
 		BallLives.RemoveAt(Lives - 1);// Удаляем из массива
 		UpdateBallLivesLocation();//обновляем расположение шариков
+	}
+	else
+	{
+		if (const auto Gm = Cast<AArkanoidGameMode>(GetWorld()->GetAuthGameMode()))
+			Gm->GameEnded(false);
 	}
 }
 
