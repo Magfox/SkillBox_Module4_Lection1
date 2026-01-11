@@ -5,6 +5,7 @@
 
 #include "Bonuses/BonusParent.h"
 #include "Components/LifeComponent.h"
+#include "Framework/ArkanoidPlayerState.h"
 #include "World/Ball.h"
 
 // Sets default values
@@ -44,9 +45,18 @@ void ABlock::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class U
 			{
 				if (BonusClass && GetWorld()) // Если класс бонуса установлен и мир валиден
 				{
-					auto CurrentBonus = GetWorld()->SpawnActor<ABonusParent>(
-						BonusClass, GetActorLocation(), GetActorRotation()); // Спавн бонуса в позиции и ротации блока
+					const auto CurrentBonus = GetWorld()->SpawnActor<ABonusParent>
+					(BonusClass, GetActorLocation(), GetActorRotation()); // Спавн бонуса в позиции и ротации блока
+					//auto CurrentBonus = GetWorld()->SpawnActor<ABonusParent>(
+					//	BonusClass, GetActorLocation(), GetActorRotation()); // Спавн бонуса в позиции и ротации блока
 				}
+
+				if (const auto Pawn = Cast<APawn>(Other->GetOwner())) // Получение владельца мяча и проверка, что это Pawn
+				{
+					if (auto PlayerState = Cast<AArkanoidPlayerState>(Pawn->GetPlayerState())) // Получение состояния игрока и проверка его валидности
+						PlayerState->ChangePlayerScore(ScoreByLife * MaxLife); // Начисление очков игроку за разрушение блока
+				}
+				
 				Destroy(); // Уничтожение блока после столкновения
 			}
 			else
@@ -63,7 +73,8 @@ void ABlock::Init(const FVector NewScale, const int32 LifeAmount, const TSubclas
 	SetActorScale3D(NewScale); // Установка масштаба блока
 	BonusClass = NewBonusClass; // Инициализация класса бонуса
 	LifeComponent->SetLife(LifeAmount); // Установка количества жизней блока
-
+	MaxLife = LifeAmount;// Установка максимального количества жизней блока
+	
 	if (LifeMaterials.IsValidIndex(LifeComponent->GetLife() - 1)) // Проверка валидности индекса материала
 		StaticMesh->SetMaterial(0, LifeMaterials[LifeComponent->GetLife() - 1]); // Установка материала в зависимости от оставшихся жизней
 }

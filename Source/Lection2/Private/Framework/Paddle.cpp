@@ -7,6 +7,8 @@
 #include "MovieSceneTracksComponentTypes.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Framework/ArkanoidGameMode.h"
+#include "Framework/ArkanoidPC.h"
 #include "Kismet/GameplayStatics.h"
 #include "World/Ball.h"
 
@@ -149,8 +151,15 @@ void APaddle::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void APaddle::ExitGame()
 {
-	UGameplayStatics::OpenLevel(GetWorld(),"Menu", true);
+	//UGameplayStatics::OpenLevel(GetWorld(),"Menu", true);
+	if (const auto Pc = Cast<AArkanoidPC>(Controller))
+	{
+		Pc->ExitButtonPressed();
+	}
 }
+
+
+
 // Начало игры при нажатии кнопки
 void APaddle::StartGame()
 {
@@ -205,6 +214,11 @@ void APaddle::BallIsDead()
 		BallLives.RemoveAt(Lives - 1);// Удаляем из массива
 		UpdateBallLivesLocation();//обновляем расположение шариков
 	}
+	else
+	{
+		if (const auto Gm = Cast<AArkanoidGameMode>(GetWorld()->GetAuthGameMode()))
+			Gm->GameEnded(false);
+	}
 }
 
 void APaddle::SetDefaultSize()
@@ -212,6 +226,7 @@ void APaddle::SetDefaultSize()
 	SetActorScale3D(DefaultScale);// Ставим дефолт размер каретки
 	BoxCollider->SetBoxExtent(FVector(25.0f, 50.0f + 20.0f / DefaultScale.Y, 25.0f));
 }
+
 // Бонус изменения размера каретки
 void APaddle::BonusChangeSize(const float AdditionalSize, const float BonusTime)
 {
@@ -252,6 +267,21 @@ void APaddle::BonusChangeBallPower(const int32 Amount, const float BonusTime)
 	if (IsValid(CurrentBall))
 	{
 		CurrentBall->ChangeBallPower(Amount, BonusTime);
+	}
+}
+
+void APaddle::BonusSetDefaultPositionBallArrow()
+{
+	GEngine->AddOnScreenDebugMessage(
+			-1,// ключ сообщения (-1 = всегда новое сообщение)
+			5.0f,          // сколько секунд показывать
+			FColor::Green, // цвет текста
+			TEXT("BonusChangeSpawnBall called!"));
+
+	if (IsValid(CurrentBall))
+	{
+		CurrentBall->SetBallState(EState::idle); // Останавливаем мяч
+		CurrentBall->AttachToComponent(Arrow, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
 }
 
